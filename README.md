@@ -14,6 +14,10 @@ You can install the package via composer:
 composer require digital-creative/clickable-table-row
 ```
 
+# Usage
+
+Just install this package and every row in your tables will automatically become clickable.
+
 ## License
 
 The MIT License (MIT). Please see [License File](https://raw.githubusercontent.com/dcasia/clickable-table-row/master/LICENSE) for more information.
