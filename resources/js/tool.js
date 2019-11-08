@@ -7,7 +7,9 @@ Nova.booting((Vue, router, store) => {
         /**
          * Avoid following click when clicking on A tags or when selecting text
          */
-        if (!(event.target instanceof HTMLAnchorElement) && window.getSelection().toString() === '') {
+        if (!(event.target instanceof HTMLAnchorElement) &&
+            !(event.target instanceof HTMLInputElement) &&
+             window.getSelection().toString() === '') {
 
             const viewElement = this.querySelector('a[dusk$="-view-button"]')
 
