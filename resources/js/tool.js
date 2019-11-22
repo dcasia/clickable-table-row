@@ -4,11 +4,16 @@ Nova.booting((Vue, router, store) => {
 
     function navigateToResource(event) {
 
+        const intersectsWithIgnoredElements = event.path.some(path =>
+            path instanceof HTMLAnchorElement ||
+            path instanceof HTMLInputElement ||
+            path instanceof HTMLButtonElement ||
+            path instanceof SVGElement)
+
         /**
          * Avoid following click when clicking on A tags or when selecting text
          */
-        if (!event.path.some(path => (path instanceof HTMLAnchorElement) || (path instanceof HTMLInputElement)) &&
-            window.getSelection().toString() === '') {
+        if (!intersectsWithIgnoredElements && window.getSelection().toString() === '') {
 
             const viewElement = this.querySelector('a[dusk$="-view-button"]')
 
