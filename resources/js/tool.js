@@ -4,7 +4,9 @@ Nova.booting((Vue, router, store) => {
 
     function navigateToResource(event) {
 
-        const intersectsWithIgnoredElements = event.path.some(path =>
+        const path = event.path || (event.composedPath && event.composedPath());
+
+        const intersectsWithIgnoredElements = path.some(path =>
             path instanceof HTMLAnchorElement ||
             path instanceof HTMLInputElement ||
             path instanceof HTMLButtonElement ||
@@ -37,15 +39,20 @@ Nova.booting((Vue, router, store) => {
 
         Vue.nextTick(() => {
 
-            const rows = document.querySelectorAll('table[data-testid="resource-table"] tr[dusk$="-row"]')
+            const viewElement = document.querySelector('a[dusk$="-view-button"]')
 
-            for (const row of rows) {
+            if (viewElement) {
 
-                row.style.cursor = 'pointer'
-                row.addEventListener('click', navigateToResource)
+                const rows = document.querySelectorAll('table[data-testid="resource-table"] tr[dusk$="-row"]')
 
-                listeners.push(row)
+                for (const row of rows) {
 
+                    row.style.cursor = 'pointer'
+                    row.addEventListener('click', navigateToResource)
+
+                    listeners.push(row)
+
+                }
             }
 
         })
