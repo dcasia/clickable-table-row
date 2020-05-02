@@ -1,62 +1,48 @@
 Nova.booting((Vue, router, store) => {
+  const listeners = [];
 
-    const listeners = []
+  function navigateToResource(event) {
+    const path = event.path || (event.composedPath && event.composedPath());
 
-    function navigateToResource(event) {
+    const intersectsWithIgnoredElements = path.some(
+      (path) =>
+        path instanceof HTMLAnchorElement ||
+        path instanceof HTMLInputElement ||
+        path instanceof HTMLButtonElement ||
+        path instanceof SVGElement
+    );
 
-        const path = event.path || (event.composedPath && event.composedPath());
+    /**
+     * Avoid following click when clicking on A tags or when selecting text
+     */
+    if (!intersectsWithIgnoredElements && window.getSelection().toString() === "") {
+      let selector = 'a[dusk$="-' + (event.altKey ? "edit" : "view") + '-button"]';
+      const viewElement = this.querySelector(selector);
 
-        const intersectsWithIgnoredElements = path.some(path =>
-            path instanceof HTMLAnchorElement ||
-            path instanceof HTMLInputElement ||
-            path instanceof HTMLButtonElement ||
-            path instanceof SVGElement)
+      if (viewElement) {
+        viewElement.click();
+      }
+    }
+  }
 
-        /**
-         * Avoid following click when clicking on A tags or when selecting text
-         */
-        if (!intersectsWithIgnoredElements && window.getSelection().toString() === '') {
-
-            const viewElement = this.querySelector('a[dusk$="-view-button"]')
-
-            if (viewElement) {
-
-                viewElement.click()
-
-            }
-
-        }
-
+  Nova.$on("resources-loaded", () => {
+    while (listeners.length) {
+      listeners.pop().removeEventListener("click", navigateToResource);
     }
 
-    Nova.$on('resources-loaded', () => {
+    Vue.nextTick(() => {
+      const viewElement = document.querySelector('a[dusk$="-view-button"]');
 
-        while (listeners.length) {
+      if (viewElement) {
+        const rows = document.querySelectorAll('table[data-testid="resource-table"] tr[dusk$="-row"]');
 
-            listeners.pop().removeEventListener('click', navigateToResource)
+        for (const row of rows) {
+          row.style.cursor = "pointer";
+          row.addEventListener("click", navigateToResource);
 
+          listeners.push(row);
         }
-
-        Vue.nextTick(() => {
-
-            const viewElement = document.querySelector('a[dusk$="-view-button"]')
-
-            if (viewElement) {
-
-                const rows = document.querySelectorAll('table[data-testid="resource-table"] tr[dusk$="-row"]')
-
-                for (const row of rows) {
-
-                    row.style.cursor = 'pointer'
-                    row.addEventListener('click', navigateToResource)
-
-                    listeners.push(row)
-
-                }
-            }
-
-        })
-
-    })
-
-})
+      }
+    });
+  });
+});
