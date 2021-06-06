@@ -18,7 +18,7 @@ Nova.booting((Vue, router, store) => {
     if (!intersectsWithIgnoredElements && window.getSelection().toString() === '') {
 
       const selector = 'a[dusk$="-' + ( event.altKey ? 'edit' : 'view' ) + '-button"]'
-      const viewElement = this.querySelector(selector)
+      const viewElement = this.parentNode.querySelector(selector)
 
       if (viewElement) {
 
@@ -44,14 +44,18 @@ Nova.booting((Vue, router, store) => {
 
       if (viewElement) {
 
-        const rows = document.querySelectorAll('table[data-testid="resource-table"] tr[dusk$="-row"]')
+        const columns = document.querySelectorAll('table[data-testid="resource-table"] tr[dusk$="-row"] td')
 
-        for (const row of rows) {
+        for (const column of columns) {
 
-          row.style.cursor = 'pointer'
-          row.addEventListener('click', navigateToResource)
+          if (column.querySelector('select')) {
+            continue;
+          }
 
-          listeners.push(row)
+          column.style.cursor = 'pointer'
+          column.addEventListener('click', navigateToResource)
+
+          listeners.push(column)
 
         }
       }
